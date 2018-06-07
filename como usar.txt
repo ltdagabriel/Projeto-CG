@@ -1,0 +1,20 @@
+documentação
+site: http://pyopengl.sourceforge.net/
+bibliotecas: http://pyopengl.sourceforge.net/documentation/manual-3.0/index.html
+
+requisitos
++ python 2.7
+
+requisitos python
++ pygame
++ PyOpenGL 
++ PyOpenGL_accelerate
+
+se SO for o windows, instalar requisitos Visual Code para compilar python 
++ VCForPython27.msi url: https://www.microsoft.com/en-us/download/details.aspx?id=44266
+
+se for linux, não sei!!
+
+como usar
+python .\test.py .\pokebola.obj
+

@@ -17,7 +17,8 @@ class Cube(object):
     right_key = False
     up_key = False
     down_key = False
-    angle = 0
+    angleY = 0
+    angleX = 0
     cube_angle = 0
 
     # -------------------------------------
@@ -58,9 +59,11 @@ class Cube(object):
         # glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 0.2))
         # glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 0.9))
 
-        glTranslatef(0, -0.5, 0)
+        glTranslatef(0, -1, 0)
+        # gluLookAt(camera.x, camera.y, camera.z,  lookat.x, lookat.y, lookat.z, 0, 1, 0)
 
-        gluLookAt(0, 0, 0, math.sin(math.radians(self.angle)), 0, math.cos(math.radians(self.angle)) * -1, 0, 1, 0)
+        glRotatef(self.angleX, 1, 0, 0)
+        glRotatef(self.angleY, 0, 1, 0)
 
         glTranslatef(self.coordinates[0], self.coordinates[1], self.coordinates[2])
 
@@ -68,11 +71,13 @@ class Cube(object):
         self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
 
         # coloca a pokebola acima do chao
-        glTranslatef(0, 2, 0)
+        glTranslatef(0, 2, 1)
 
         # faz a pokebola ficar girando
         glRotatef(self.cube_angle, 0, 1, 0)
         glRotatef(45, 1, 0, 0)
+
+        glTranslatef(0, 0, -1)
 
         # renderiza a pokebola
         glCallList(self.obj.gl_list)
@@ -86,25 +91,30 @@ class Cube(object):
     # self.monkey.render_scene()
 
     def move_forward(self):
-        self.coordinates[2] += 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[0] -= 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] += 0.1 * math.cos(math.radians(self.angleY))
+        self.coordinates[0] -= 0.1 * math.sin(math.radians(self.angleY))
 
     def move_back(self):
-        self.coordinates[2] -= 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[0] += 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[2] -= 0.1 * math.cos(math.radians(self.angleY))
+        self.coordinates[0] += 0.1 * math.sin(math.radians(self.angleY))
 
     def move_left(self):
-        self.coordinates[0] += 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[2] += 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[0] += 0.1 * math.cos(math.radians(self.angleY))
+        self.coordinates[2] += 0.1 * math.sin(math.radians(self.angleY))
 
     def move_right(self):
-        self.coordinates[0] -= 0.1 * math.cos(math.radians(self.angle))
-        self.coordinates[2] -= 0.1 * math.sin(math.radians(self.angle))
+        self.coordinates[0] -= 0.1 * math.cos(math.radians(self.angleY))
+        self.coordinates[2] -= 0.1 * math.sin(math.radians(self.angleY))
 
-    def rotate(self, n):
-        if self.angle >= 360 or self.angle <= -360:
-            self.angle = 0
-        self.angle += n
+    def rotateX(self, n):
+        if self.angleY >= 360 or self.angleY <= -360:
+            self.angleY = 0
+        self.angleY += n
+
+    def rotateY(self, n):
+        if self.angleX >= 360 or self.angleX <= -360:
+            self.angleX = 0
+        self.angleX += n
 
     def update(self):
         if self.left_key:
@@ -117,10 +127,14 @@ class Cube(object):
             self.move_back()
 
         pos = pygame.mouse.get_pos()
-        if pos[0] < 75:
-            self.rotate(-1.2)
-        elif pos[0] > 565:
-            self.rotate(1.2)
+        if pos[0] < 70:
+            self.rotateX(-1.2)
+        elif pos[0] > 450:
+            self.rotateX(1.2)
+        if pos[1] < 70:
+            self.rotateY(-1.2)
+        elif pos[1] > 450:
+            self.rotateY(1.2)
 
         if self.cube_angle >= 360:
             self.cube_angle = 0

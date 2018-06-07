@@ -27,7 +27,7 @@ class Cube(object):
 
         # inicializa a camera
         # ---Coordinates----[x,y,z]-----------------------------
-        self.coordinates = [0, 0, 0]
+        self.coordinates = [-2, 0, -4]
 
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
@@ -47,14 +47,16 @@ class Cube(object):
 
     def render_scene(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # glClearColor(0.7,0.9,1,1)
+        # glClearColor(0.7, 0.9, 1, 1)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
         # Add positioned light:
-        glLightfv(GL_LIGHT0, GL_POSITION, (-40, 200, 100, 0.0))
-        glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
+        glLightfv(GL_LIGHT1, GL_SPECULAR, (0.9, 0.9, 0.9, 0.8))
+        glLightfv(GL_LIGHT1, GL_AMBIENT, (0.65, 0.65, 0.65, 0.9))
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, (0.65, 0.65, 0.65, 0.9))
+        # glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 0.2))
+        # glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 0.9))
 
         glTranslatef(0, -0.5, 0)
 
@@ -66,7 +68,7 @@ class Cube(object):
         self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
 
         # coloca a pokebola acima do chao
-        glTranslatef(-7.5, 2, 0)
+        glTranslatef(0, 2, 0)
 
         # faz a pokebola ficar girando
         glRotatef(self.cube_angle, 0, 1, 0)
@@ -134,6 +136,7 @@ class Cube(object):
     def delete_texture(self):
         pass
 
+
 # glDeleteTextures(self.rubik_id)
 # glDeleteTextures(self.surface_id)
 
@@ -149,11 +152,8 @@ def main():
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
 
-    # iluminação
-    glLightfv(GL_LIGHT0, GL_POSITION, (-40, 200, 100, 0.0))
-    glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
     glEnable(GL_LIGHT0)
+    glEnable(GL_LIGHT1)
     glEnable(GL_LIGHTING)
 
     # ativa textuta de arquivos mtl

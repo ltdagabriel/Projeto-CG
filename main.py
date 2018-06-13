@@ -48,7 +48,7 @@ class Cube(object):
 
     def render_scene(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # glClearColor(0.7, 0.9, 1, 1)
+        glClearColor(0.7, 0.9, 1, 1)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
@@ -163,7 +163,9 @@ class Cube(object):
     	print("Entrou")
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     	#/** viewport do canto superior esquerdo **/
-    	glViewport(0, 400, 400, 400);
+    	glColor3f(0.0,0.0,1.0)
+    	glViewport(0, 0, 1000, 700)
+    	glColor3f(0.0,0.0,1.0)
 
     	glMatrixMode(GL_PROJECTION); #//define que a matrix é a de projeção
     	glLoadIdentity(); #//carrega a matrix de identidade

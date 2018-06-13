@@ -26,8 +26,6 @@ class Main:
         pygame.display.set_gamma(1, 0, 0)
         pygame.display.set_caption("PROJETO CGR")
 
-        self.font = pygame.font.SysFont("comicsansms", 24)
-
         # ---Coordinates----[x,y,z]-----------------------------
         self.coordinates = [0, 0, -10]
 
@@ -105,33 +103,33 @@ class Main:
         # VIEWPORT GRANDE DA ESQUERDA
         glViewport(0, 0, 800, 650)
 
-        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
-        glLoadIdentity();  # //carrega a matrix de identidade
+        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
+        glLoadIdentity()  # //carrega a matrix de identidade
         gluPerspective(90.0, 1280 / float(650), 1, 100.0)
         self.display()
 
-        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
-        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
+        glLoadIdentity()
 
         # VIEWPORT DO CANTO INFERIOR DIREITO
         glViewport(800, 0, 480, 325)
-        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
-        glLoadIdentity();  # //carrega a matrix de identidade
+        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
+        glLoadIdentity()  # //carrega a matrix de identidade
         gluPerspective(90.0, 1280 / float(650), 1, 100.0)
 
-        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
-        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
+        glLoadIdentity()
         self.display()
 
         # VIEWPORT DO CANTO SUPERIOR DIREITO
         glViewport(800, 325, 480, 325)
-        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
-        glLoadIdentity();  # //carrega a matrix de identidade
+        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
+        glLoadIdentity()  # //carrega a matrix de identidade
         gluPerspective(90.0, 1280 / float(650), 1, 100.0)
 
         self.display()
-        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
-        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
+        glLoadIdentity()
 
     def move_forward(self):
         self.coordinates[2] += 0.1 * math.cos(math.radians(self.angleY))

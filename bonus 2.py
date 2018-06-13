@@ -1,3 +1,5 @@
+from objloader import *
+
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
@@ -15,6 +17,8 @@ class Main:
         glutCreateWindow("Bonus 2 em python by: Gabriel")
 
         self.init()
+
+        self.pokebola = OBJ("pokebola.obj", swapyz=True)
 
         glutDisplayFunc(self.display)
         glutMainLoop()

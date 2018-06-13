@@ -10,11 +10,6 @@ requisitos python
 + PyOpenGL 
 + PyOpenGL_accelerate
 
-se SO for o windows, instalar requisitos Visual Code para compilar python 
+Requisitos Windows, 
 + VCForPython27.msi url: https://www.microsoft.com/en-us/download/details.aspx?id=44266
-
-se for linux, não sei!!
-
-como usar
-python .\test.py .\pokebola.obj
 

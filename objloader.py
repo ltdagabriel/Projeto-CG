@@ -26,6 +26,8 @@ def MTL(filename):
                 GL_LINEAR)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ix, iy, 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, image)
+        elif values[0] == 'map_d':
+            mtl[values[0]] = values[1:]
         else:
             mtl[values[0]] = map(float, values[1:])
     return contents

@@ -21,7 +21,8 @@ class Main:
     def __init__(self):
         pygame.init()
         self.viewport = (1280, 650)
-        self.screen = pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
+        glutInitWindowPosition(100, 0)
+        pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
         pygame.display.set_gamma(1, 0, 0)
         pygame.display.set_caption("PROJETO CGR")
 
@@ -39,7 +40,7 @@ class Main:
     def loop(self):
         clock = pygame.time.Clock()
         done = False
-
+        view = False
         # --- Main event loop
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -60,7 +61,7 @@ class Main:
                     self.move_back()
                     self.down_key = True
                 elif event.key == pygame.K_0:
-                    self.divideViewport()
+                    view = not view
 
             if event.type == pygame.KEYUP:
 
@@ -74,7 +75,10 @@ class Main:
                     self.keyup()
 
         self.update()
-        self.display()
+        if view:
+            self.divideViewport()
+        else:
+            self.display()
 
         pygame.display.flip()
         clock.tick(30)
@@ -98,21 +102,36 @@ class Main:
         glViewport(0, 0, 1000, 700)
         glColor3f(0.0, 0.0, 1.0)
 
-        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
-        glLoadIdentity()  # //carrega a matrix de identidade
-        glOrtho(-3.0, 3.0, -3.0, 3.0, 1.0, 50.0)  # //define uma projeção ortogonal
+        # VIEWPORT GRANDE DA ESQUERDA
+        glViewport(0, 0, 800, 650)
 
-        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
-        glLoadIdentity()
+        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
+        glLoadIdentity();  # //carrega a matrix de identidade
+        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
+        self.display()
 
-        # /** define a posicao da camera **/
-        gluLookAt(0.0, 1.0, 0.0,  # //posição da câmera
-                  0.0, 0.0, 0.0,  # //para onde a câmera aponta
-                  0.0, 0.0, 1.0)  # //vetor view-up*/
+        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
+        glLoadIdentity();
 
-        glColor3f(1.0, 0.0, 0.0)  # //altera o atributo de cor
+        # VIEWPORT DO CANTO INFERIOR DIREITO
+        glViewport(800, 0, 480, 325)
+        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
+        glLoadIdentity();  # //carrega a matrix de identidade
+        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
 
-    # glutWireTeapot(1.0); #// desenha o tea pot
+        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
+        glLoadIdentity();
+        self.display()
+
+        # VIEWPORT DO CANTO SUPERIOR DIREITO
+        glViewport(800, 325, 480, 325)
+        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
+        glLoadIdentity();  # //carrega a matrix de identidade
+        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
+
+        self.display()
+        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
+        glLoadIdentity();
 
     def move_forward(self):
         self.coordinates[2] += 0.1 * math.cos(math.radians(self.angleY))
@@ -250,7 +269,7 @@ class Main:
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-        luzAmbiente = [0.8, 0.8, 0.8, 1.0]
+        luzAmbiente = [0.1, 0.1, 0.1, 1.0]
         luzDifusa = [0.7, 0.7, 0.7, 1.0]
         luzEspecular = [1.0, 1.0, 1.0, 1.0]
         posicaoLuz = [0.0, 10.0, 0.0, 1.0]

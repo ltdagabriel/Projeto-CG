@@ -60,6 +60,15 @@ class Main:
         # Projecao ortogonal
         glOrtho(-2, 2, -2, 2, 1, 50)
 
+        glBegin(GL_LINE_LOOP)
+        
+        glVertex2i(-99,-99)
+        glVertex2i(99,-99)
+        glVertex2i(99,99)
+        glVertex2i(-99,99)
+
+        glEnd()
+
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 

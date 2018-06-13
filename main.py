@@ -137,15 +137,15 @@ class Cube(object):
         elif self.down_key:
             self.move_back()
 
-        pos = pygame.mouse.get_pos()
-        if pos[0] < 70:
-            self.rotateX(-1.2)
-        elif pos[0] > 450:
-            self.rotateX(1.2)
-        if pos[1] < 70:
-            self.rotateY(-1.2)
-        elif pos[1] > 450:
-            self.rotateY(1.2)
+        # pos = pygame.mouse.get_pos()
+        # if pos[0] < 70:
+        #     self.rotateX(-1.2)
+        # elif pos[0] > 450:
+        #     self.rotateX(1.2)
+        # if pos[1] < 70:
+        #     self.rotateY(-1.2)
+        # elif pos[1] > 450:
+        #     self.rotateY(1.2)
 
         if self.cube_angle >= 360:
             self.cube_angle = 0
@@ -190,7 +190,7 @@ class Cube(object):
 
 def main():
     pygame.init()
-    viewport = (800, 600)
+    viewport = (1024, 600)
     pygame.display.set_mode(viewport, pygame.DOUBLEBUF | pygame.OPENGL)
     pygame.display.set_caption("Projeto OpenGL")
     clock = pygame.time.Clock()

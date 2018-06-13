@@ -69,12 +69,10 @@ class Main:
         # Color RED
         glColor3f(1, 0, 0)
 
-        glutWireTeapot(1)
+        # renderiza a pokebola
+        glCallList(self.pokebola.gl_list)
+
         # END ViewPort 1
-
-
-        self.teapot()
-        # END ViewPort 4
 
         glFlush()
 

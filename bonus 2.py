@@ -12,9 +12,11 @@ class Main:
         glutInit(len(sys.argv), sys.argv)
 
         glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)
-        glutInitWindowPosition(200, 0)
-        glutInitWindowSize(800, 800)
-        glutCreateWindow("Bonus 2 em python by: Gabriel")
+
+        # posicao inicial da janela no computador (nao tem nada a ver com o que tem dentro)
+        glutInitWindowPosition(100, 0)
+        glutInitWindowSize(1024, 600)
+        glutCreateWindow("PROJETO CGR")
 
         self.init()
 
@@ -69,67 +71,7 @@ class Main:
 
         glutWireTeapot(1)
         # END ViewPort 1
-        # -------------------------------------------------------
-        # INIT ViewPort 2 - Canto Superior Direito
-        glViewport(pontos[1][0], pontos[1][1], pontos[2][0], pontos[2][1])
 
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-
-        # Projecao ortogonal
-        glOrtho(-2, 2, -2, 2, 1, 50)
-
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        # Camera
-        gluLookAt(1, 0, 0, 0, 0, 0, 0, 1, 0)
-
-        # Color RED
-        glColor3f(1, 0, 0)
-
-        glutWireTeapot(1)
-        # END ViewPort 2
-        # -------------------------------------------------------
-        pontos = [[0, 0], [400, 400], [400, 0]]
-        # INIT ViewPort 3 - Canto Inferior Esquerdo
-        glViewport(pontos[0][0], pontos[0][1], pontos[1][0], pontos[1][1])
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-
-        # Projecao ortogonal
-        glOrtho(-2.0, 2.0, -2.0, 2.0, 1.0, 50.0)
-
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        # Camera
-        gluLookAt(0, 0, 1, 0, 0, 0, 0, 1, 0)
-
-        # Color RED
-        glColor3f(1, 0, 0)
-
-        glutWireTeapot(1)
-        # END ViewPort 3
-        # -------------------------------------------------------
-        # INIT ViewPort 4 - Canto Inferior Direito
-        glViewport(pontos[2][0], pontos[2][1], pontos[1][0], pontos[1][1])
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-
-        # Projecao ortogonal
-        gluPerspective(70.0, 1.0, 1.0, 50.0)
-
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        # Camera
-        gluLookAt(0, 0, 3, 0, 0, 0, 0, 1, 0)
-
-        # Color RED
-        glColor3f(1, 0, 0)
 
         self.teapot()
         # END ViewPort 4

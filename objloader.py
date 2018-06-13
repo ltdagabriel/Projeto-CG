@@ -1,6 +1,7 @@
 import pygame
 from OpenGL.GL import *
 
+
 def MTL(filename):
     contents = {}
     mtl = None
@@ -21,16 +22,17 @@ def MTL(filename):
             texid = mtl['texture_Kd'] = glGenTextures(1)
             glBindTexture(GL_TEXTURE_2D, texid)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                GL_LINEAR)
+                            GL_LINEAR)
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                GL_LINEAR)
+                            GL_LINEAR)
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ix, iy, 0, GL_RGBA,
-                GL_UNSIGNED_BYTE, image)
+                         GL_UNSIGNED_BYTE, image)
         elif values[0] == 'map_d':
             mtl[values[0]] = values[1:]
         else:
             mtl[values[0]] = map(float, values[1:])
     return contents
+
 
 class OBJ:
     def __init__(self, filename, swapyz=False):

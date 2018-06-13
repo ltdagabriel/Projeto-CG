@@ -8,6 +8,7 @@ from OpenGL.GL import *
 from pygame import *
 import math
 
+
 class Main:
     left_key = False
     right_key = False
@@ -20,12 +21,14 @@ class Main:
     def __init__(self):
         pygame.init()
         self.viewport = (1280, 650)
-        pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
+        self.screen = pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
         pygame.display.set_gamma(1, 0, 0)
         pygame.display.set_caption("PROJETO CGR")
 
+        self.font = pygame.font.SysFont("comicsansms", 24)
+
         # ---Coordinates----[x,y,z]-----------------------------
-        self.coordinates = [-2, 0, -4]
+        self.coordinates = [0, 0, -10]
 
         self.init()
 
@@ -79,6 +82,8 @@ class Main:
         if not done:
             self.loop()
 
+        pygame.quit()
+
     def keyup(self):
         self.left_key = False
         self.right_key = False
@@ -87,25 +92,25 @@ class Main:
 
     def divideViewport(self):
         print("Entrou")
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         # /** viewport do canto superior esquerdo **/
         glColor3f(0.0, 0.0, 1.0)
         glViewport(0, 0, 1000, 700)
         glColor3f(0.0, 0.0, 1.0)
 
-        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
-        glLoadIdentity();  # //carrega a matrix de identidade
-        glOrtho(-3.0, 3.0, -3.0, 3.0, 1.0, 50.0);  # //define uma projeção ortogonal
+        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
+        glLoadIdentity()  # //carrega a matrix de identidade
+        glOrtho(-3.0, 3.0, -3.0, 3.0, 1.0, 50.0)  # //define uma projeção ortogonal
 
-        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
-        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
+        glLoadIdentity()
 
         # /** define a posicao da camera **/
         gluLookAt(0.0, 1.0, 0.0,  # //posição da câmera
                   0.0, 0.0, 0.0,  # //para onde a câmera aponta
-                  0.0, 0.0, 1.0);  # //vetor view-up*/
+                  0.0, 0.0, 1.0)  # //vetor view-up*/
 
-        glColor3f(1.0, 0.0, 0.0);  # //altera o atributo de cor
+        glColor3f(1.0, 0.0, 0.0)  # //altera o atributo de cor
 
     # glutWireTeapot(1.0); #// desenha o tea pot
 
@@ -190,6 +195,41 @@ class Main:
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_MODELVIEW)
 
+    def plano(self):
+
+        # Linha Z
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, 0, 1000)
+        glEnd()
+        glColor3f(0, 0, 1)
+
+        glPopMatrix()
+
+        # Linha Y
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, 1000, 0)
+        glEnd()
+        glColor3f(0, 1, 0)
+
+        glPopMatrix()
+
+        # Linha X
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(1000, 0, 0)
+        glEnd()
+        glColor3f(0, 1, 1)
+
+        glPopMatrix()
+
     def desenha_objeto(self):
         glBegin(GL_TRIANGLES)
         glVertex2i(50, -50)
@@ -228,25 +268,23 @@ class Main:
         # glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 0.2))
         # glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 0.9))
 
-        glTranslatef(0, -1, 0)
         # gluLookAt(camera.x, camera.y, camera.z,  lookat.x, lookat.y, lookat.z, 0, 1, 0)
 
         glTranslatef(self.coordinates[0], self.coordinates[1], self.coordinates[2])
 
-        # renderiza o chao
-        # self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
+        glPushMatrix()
 
         # coloca a pokebola acima do chao
         glTranslatef(0, 2, 1)
-
         # faz a pokebola ficar girando
         glRotatef(self.cube_angle, 0, 1, 0)
         glRotatef(45, 1, 0, 0)
-
         glTranslatef(0, 0, -1)
-
-        # renderiza a pokebola
         glCallList(self.pokebola.gl_list)
+
+        glPopMatrix()
+
+        self.plano()
 
     def view2D(self):
         glClear(GL_COLOR_BUFFER_BIT)

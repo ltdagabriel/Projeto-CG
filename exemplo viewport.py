@@ -23,8 +23,16 @@ class Main:
         self.viewport = (1280, 650)
         glutInitWindowPosition(100, 0)
         pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
-        pygame.display.set_gamma(1, 0, 0)
         pygame.display.set_caption("PROJETO CGR")
+
+        glLightfv(GL_LIGHT0, GL_POSITION, (-40, 200, 100, 0.0))
+        glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHTING)
+        glEnable(GL_COLOR_MATERIAL)
+        glEnable(GL_DEPTH_TEST)
+        glShadeModel(GL_SMOOTH)  # most obj files expect to be smooth-shaded
 
         # ---Coordinates----[x,y,z]-----------------------------
         self.coordinates = [0, 0, -10]
@@ -147,16 +155,6 @@ class Main:
         self.coordinates[0] -= 0.1 * math.cos(math.radians(self.angleY))
         self.coordinates[2] -= 0.1 * math.sin(math.radians(self.angleY))
 
-    def rotateX(self, n):
-        if self.angleY >= 360 or self.angleY <= -360:
-            self.angleY = 0
-        self.angleY += n
-
-    def rotateY(self, n):
-        if self.angleX >= 360 or self.angleX <= -360:
-            self.angleX = 0
-        self.angleX += n
-
     def update(self):
         if self.left_key:
             self.move_left()
@@ -167,44 +165,9 @@ class Main:
         elif self.down_key:
             self.move_back()
 
-        if self.cube_angle >= 360:
-            self.cube_angle = 0
-        else:
-            self.cube_angle += 0.5
-
-    def teapot(self):
-        glRotatef(45, 1, 0, 0)
-        glRotatef(self.cont, 0, 0, 1)
-        glutWireTeapot(1)
-
-        self.cont = 0 if self.cont == 360 else self.cont + 1
-
-        glutPostRedisplay()
+        self.cube_angle = 0 if self.cube_angle >= 360 else self.cube_angle + 1
 
     def init(self):
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-
-        glEnable(GL_LIGHT1)
-
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-
-        # ativa textuta de arquivos mtl
-        glEnable(GL_COLOR_MATERIAL)
-        # ativa sombra de arquivos obj
-        glShadeModel(GL_SMOOTH)  # most obj files expect to be smooth-shaded
-
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_NORMALIZE)
-
-        # Reinicializa a cor de fundo
-        glClearColor(1, 1, 1, 1)
-
-        glMatrixMode(GL_PROJECTION)
-        # Matriz de identidade
-        glLoadIdentity()
-
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
         width, height = self.viewport
@@ -247,20 +210,6 @@ class Main:
 
         glPopMatrix()
 
-    def desenha_objeto(self):
-        glBegin(GL_TRIANGLES)
-        glVertex2i(50, -50)
-        glVertex2i(0, 50)
-        glVertex2i(-50, -50)
-        glEnd()
-
-        glBegin(GL_LINE_LOOP)
-        glVertex2i(-99, -99)
-        glVertex2i(99, -99)
-        glVertex2i(99, 99)
-        glVertex2i(-99, 99)
-        glEnd()
-
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glClearColor(0.7, 0.9, 1, 1)
@@ -302,36 +251,6 @@ class Main:
         glPopMatrix()
 
         self.plano()
-
-    def view2D(self):
-        glClear(GL_COLOR_BUFFER_BIT)
-
-        # ViewPort esquerda
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        glViewport(0, 0, 800, 650)
-        glColor3f(0, 1, 0)
-        glRotatef(90, 0, 0, 1)
-        self.desenha_objeto()
-
-        # ViewPort Direita inferior
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        glViewport(800, 0, 480, 325)
-        glColor3f(0, 0, 1)
-        self.desenha_objeto()
-
-        # ViewPort Direita superior
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-
-        glViewport(800, 325, 480, 325)
-        glColor3f(0, 0, 1)
-
-        self.desenha_objeto()
-        glFlush()
 
 
 if __name__ == '__main__':

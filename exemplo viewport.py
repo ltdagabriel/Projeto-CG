@@ -225,18 +225,17 @@ class Main:
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_MODELVIEW)
 
-        self.front.init(0, 0, width / 2, height / 2)
+        self.front.init(0, 0, 800, 650)
         self.front.lookAt({"x": 0, "y": 0, "z": 40}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 1, "z": 0})
 
-        self.top.init(0, height / 2, width / 2, height / 2)
+        self.top.init(800, 0, 480, 325)
         self.top.lookAt({"x": 0, "y": 40, "z": 0}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 0, "z": -1})
 
-        self.side.init(width / 2, 0, width / 2, height / 2)
+        self.side.init(800, 325, 480, 325)
         self.side.lookAt({"x": 40, "y": 0, "z": 0}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 1, "z": 0})
 
-        self.camera.init(width / 2, height / 2, width / 2, height / 2)
-        self.camera.lookAt({"x": 30, "y": 30, "z": 30}, {"x": 0, "y": 0, "z": 0},
-                           {"x": -0.577, "y": 0.577, "z": -0.577})
+        self.camera.init(0, 0, 800, 650)
+        self.camera.lookAt({"x": 0, "y": 0, "z": 40}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 1, "z": 0})
 
     def plano(self):
 

@@ -6,6 +6,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 from pygame import *
+import graphics
 import math
 
 
@@ -53,13 +54,17 @@ class Main:
     angleY = 0
     angleX = 0
     cube_angle = 0
+    eixoY = 10
+    eixoX = 0
 
+    sol_ang = 0
     width = 1280
     height = 650
 
     front = Viewport()
     top = Viewport()
     side = Viewport()
+
     # camera = Viewport()
 
     def __init__(self):
@@ -85,11 +90,18 @@ class Main:
 
         self.pokebola = OBJ("pokebola.obj", swapyz=True)
 
+        # renderiza objeto sem textura
+        self.ground = graphics.ObjLoader("plane.obj")
+
+        # importa uma imagem para agir como textura do objeto
+        self.ground_texture = graphics.load_texture("plane.png")
+
         self.loop()
 
     def loop(self):
         clock = pygame.time.Clock()
         done = False
+        self.sol_ang += .5
         # --- Main event loop
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -177,7 +189,7 @@ class Main:
         glMatrixMode(GL_MODELVIEW)
         # VIEWPORT GRANDE DA ESQUERDA
         self.front.init(0, 0, 800, 650)
-        self.front.lookAt({"x": 0, "y": 0, "z": 10},
+        self.front.lookAt({"x": 0, "y": 0, "z": 30},
                           {"x": 0, "y": 0, "z": 0},
                           {"x": 0, "y": 1, "z": 0})
 
@@ -228,7 +240,7 @@ class Main:
         glVertex3f(0, 0, 0)
         glVertex3f(1000, 0, 0)
         glEnd()
-        glColor3f(0, 1, 1)
+        glColor3f(1, 0, 0)
 
         glPopMatrix()
 
@@ -244,8 +256,48 @@ class Main:
         glCallList(self.pokebola.gl_list)
 
         glPopMatrix()
+        glPushMatrix()
+        # renderiza o chao
+        glColor3f(0, 23, 1)
+        glRotatef(1, 1, 0, 0)
+        glTranslatef(0, -1.5, 0)
+        self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
+        glPopMatrix()
 
+        self.sol()
+        self.lua()
         self.plano()
+
+    def lua(self):
+        glPushMatrix()
+
+        glRotatef(self.sol_ang, 0, 0, -1)
+
+        glTranslatef(-15, 0, 0)
+
+        # faz a pokebola ficar girando
+        glRotatef(self.cube_angle, 0, 1, 0)
+        glTranslatef(0, 0, -1)
+
+        glCallList(self.pokebola.gl_list)
+
+        glPopMatrix()
+
+    def sol(self):
+        # glTranslatef(self.coordinates[0], self.coordinates[1], self.coordinates[2])
+        glPushMatrix()
+
+        glRotatef(self.sol_ang, 0, 0, -1)
+
+        glTranslatef(15, 0, 0)
+
+        # faz a pokebola ficar girando
+        glRotatef(self.cube_angle, 0, 1, 0)
+        glTranslatef(0, 0, -1)
+
+        glCallList(self.pokebola.gl_list)
+
+        glPopMatrix()
 
     def display(self):
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -274,6 +326,8 @@ class Main:
         # gluLookAt(camera.x, camera.y, camera.z,  lookat.x, lookat.y, lookat.z, 0, 1, 0)
         self.front.set()
         self.objects()
+        # self.lua()
+        # self.sol()
 
         self.top.set()
         self.objects()

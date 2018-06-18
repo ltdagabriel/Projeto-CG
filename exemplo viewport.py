@@ -44,12 +44,6 @@ class Viewport:
                   self.look["x"], self.look["y"], self.look["z"],
                   self.up["x"], self.up["y"], self.up["z"])
 
-    def wh(self, w, h):
-        self.width = w
-        self.height = h
-        self.aspect = self.width / self.height
-        self.set()
-
 
 class Main:
     left_key = False
@@ -66,7 +60,7 @@ class Main:
     front = Viewport()
     top = Viewport()
     side = Viewport()
-    camera = Viewport()
+    # camera = Viewport()
 
     def __init__(self):
         pygame.init()
@@ -85,7 +79,7 @@ class Main:
         glShadeModel(GL_SMOOTH)  # most obj files expect to be smooth-shaded
 
         # ---Coordinates----[x,y,z]-----------------------------
-        self.coordinates = [0, 0, -10]
+        self.coordinates = [0, 0, 0]
 
         self.init()
 
@@ -96,7 +90,6 @@ class Main:
     def loop(self):
         clock = pygame.time.Clock()
         done = False
-        view = False
         # --- Main event loop
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -117,7 +110,7 @@ class Main:
                     self.move_back()
                     self.down_key = True
                 elif event.key == pygame.K_0:
-                    view = not view
+                    pass
 
             if event.type == pygame.KEYUP:
 
@@ -131,10 +124,7 @@ class Main:
                     self.keyup()
 
         self.update()
-        if view:
-            self.divideViewport()
-        else:
-            self.display()
+        self.display()
 
         pygame.display.flip()
         clock.tick(30)
@@ -149,45 +139,6 @@ class Main:
         self.right_key = False
         self.up_key = False
         self.down_key = False
-
-    def divideViewport(self):
-        print("Entrou")
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        # /** viewport do canto superior esquerdo **/
-        glColor3f(0.0, 0.0, 1.0)
-        glViewport(0, 0, 1000, 700)
-        glColor3f(0.0, 0.0, 1.0)
-
-        # VIEWPORT GRANDE DA ESQUERDA
-        glViewport(0, 0, 800, 650)
-
-        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
-        glLoadIdentity()  # //carrega a matrix de identidade
-        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
-        self.display()
-
-        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
-        glLoadIdentity()
-
-        # VIEWPORT DO CANTO INFERIOR DIREITO
-        glViewport(800, 0, 480, 325)
-        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
-        glLoadIdentity()  # //carrega a matrix de identidade
-        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
-
-        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
-        glLoadIdentity()
-        self.display()
-
-        # VIEWPORT DO CANTO SUPERIOR DIREITO
-        glViewport(800, 325, 480, 325)
-        glMatrixMode(GL_PROJECTION)  # //define que a matrix é a de projeção
-        glLoadIdentity()  # //carrega a matrix de identidade
-        gluPerspective(90.0, 1280 / float(650), 1, 100.0)
-
-        self.display()
-        glMatrixMode(GL_MODELVIEW)  # //matrix em uso: modelview
-        glLoadIdentity()
 
     def move_forward(self):
         self.coordinates[2] += 0.1 * math.cos(math.radians(self.angleY))
@@ -224,22 +175,30 @@ class Main:
         gluPerspective(90.0, width / float(height), 1, 100.0)
         glEnable(GL_DEPTH_TEST)
         glMatrixMode(GL_MODELVIEW)
+        # VIEWPORT GRANDE DA ESQUERDA
+        self.front.init(0, 0, 800, 650)
+        self.front.lookAt({"x": 0, "y": 0, "z": 10},
+                          {"x": 0, "y": 0, "z": 0},
+                          {"x": 0, "y": 1, "z": 0})
 
-        self.front.init(0, 0, width / 2, height / 2)
-        self.front.lookAt({"x": 0, "y": 0, "z": 40}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 1, "z": 0})
+        # VIEWPORT DO CANTO INFERIOR DIREITO
+        self.top.init(800, 0, 480, 325)
+        self.top.lookAt({"x": 0, "y": 30, "z": 0},
+                        {"x": 0, "y": 0, "z": 0},
+                        {"x": 0, "y": 0, "z": -1})
 
-        self.top.init(0, height / 2, width / 2, height / 2)
-        self.top.lookAt({"x": 0, "y": 40, "z": 0}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 0, "z": -1})
+        # VIEWPORT DO CANTO SUPERIOR DIREITO
+        self.side.init(800, 325, 480, 325)
+        self.side.lookAt({"x": 30, "y": 0, "z": 0},
+                         {"x": 0, "y": 0, "z": 0},
+                         {"x": 0, "y": 1, "z": 0})
 
-        self.side.init(width / 2, 0, width / 2, height / 2)
-        self.side.lookAt({"x": 40, "y": 0, "z": 0}, {"x": 0, "y": 0, "z": 0}, {"x": 0, "y": 1, "z": 0})
-
-        self.camera.init(width / 2, height / 2, width / 2, height / 2)
-        self.camera.lookAt({"x": 30, "y": 30, "z": 30}, {"x": 0, "y": 0, "z": 0},
-                           {"x": -0.577, "y": 0.577, "z": -0.577})
+        # self.camera.init(width / 2, height / 2, width / 2, height / 2)
+        # self.camera.lookAt({"x": 30, "y": 30, "z": 30},
+        #                    {"x": 0, "y": 0, "z": 0},
+        #                    {"x": -0.577, "y": 0.577, "z": -0.577})
 
     def plano(self):
-
         # Linha Z
         glPushMatrix()
 
@@ -278,8 +237,6 @@ class Main:
 
         glPushMatrix()
 
-        # coloca a pokebola acima do chao
-        glTranslatef(0, 2, 1)
         # faz a pokebola ficar girando
         glRotatef(self.cube_angle, 0, 1, 0)
         glRotatef(45, 1, 0, 0)
@@ -302,10 +259,10 @@ class Main:
         posicaoLuz = [0.0, 10.0, 0.0, 1.0]
 
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente)
-        # glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente)
-        # glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
-        # glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular)
-        # glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
+        glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular)
+        glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
 
         # Add positioned light:
         # glLightfv(GL_LIGHT1, GL_SPECULAR, (0.9, 0.9, 0.9, 0.8))
@@ -324,8 +281,8 @@ class Main:
         self.side.set()
         self.objects()
 
-        self.camera.set()
-        self.objects()
+        # self.camera.set()
+        # self.objects()
 
 
 if __name__ == '__main__':

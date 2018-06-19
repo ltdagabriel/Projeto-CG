@@ -53,7 +53,7 @@ class Main:
     down_key = False
     angleY = 0
     angleX = 0
-    cube_angle = 0
+    eixo_angle = 0
     eixoY = 10
     eixoX = 0
 
@@ -89,6 +89,12 @@ class Main:
         self.init()
 
         self.pokebola = OBJ("pokebola.obj", swapyz=True)
+
+        self.pikachu = OBJ("pikachu.obj", swapyz=True)
+
+        self.arvorinha = OBJ("Lowpoly_tree_sample.obj", swapyz=True)
+
+        self.luazinha = OBJ("Moon.obj", swapyz=True)
 
         # renderiza objeto sem textura
         self.ground = graphics.ObjLoader("plane.obj")
@@ -178,7 +184,7 @@ class Main:
         elif self.down_key:
             self.move_back()
 
-        self.cube_angle = 0 if self.cube_angle >= 360 else self.cube_angle + 1
+        self.eixo_angle = 0 if self.eixo_angle >= 360 else self.eixo_angle + 1
 
     def init(self):
         glMatrixMode(GL_PROJECTION)
@@ -250,17 +256,35 @@ class Main:
         glPushMatrix()
 
         # faz a pokebola ficar girando
-        glRotatef(self.cube_angle, 0, 1, 0)
+        glTranslatef(8, 0, 0)
+        glRotatef(self.eixo_angle, 0, 1, 0)
         glRotatef(45, 1, 0, 0)
         glTranslatef(0, 0, -1)
         glCallList(self.pokebola.gl_list)
 
         glPopMatrix()
+
+        glPushMatrix()
+        glRotatef(90, -1, 0, 0)
+        glRotatef(180, 0, 0, 1)
+        glTranslatef(0, 0, -1)
+        glColor3f(1, 1, 0)
+        glCallList(self.pikachu.gl_list)
+        glPopMatrix()
+
+        glPushMatrix()
+        glTranslatef(2, -1, -10)
+        glRotatef(90, -1, 0, 0)
+        glScalef(0.5, 0.5, 0.5)
+        glCallList(self.arvorinha.gl_list)
+        glPopMatrix()
+
         glPushMatrix()
         # renderiza o chao
         glColor3f(0, 23, 1)
         glRotatef(1, 1, 0, 0)
         glTranslatef(0, -1.5, 0)
+        glScalef(10, 10, 10)
         self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
         glPopMatrix()
 
@@ -274,12 +298,13 @@ class Main:
         glRotatef(self.sol_ang, 0, 0, -1)
 
         glTranslatef(-15, 0, 0)
-
+        glRotatef(self.eixo_angle, 0, 1, 0)
+        glTranslatef(0, 0, -5)
+        # glColor3f(196, 196, 196)
+        glScalef(0.1, 0.1, 0.1)
         # faz a pokebola ficar girando
-        glRotatef(self.cube_angle, 0, 1, 0)
-        glTranslatef(0, 0, -1)
 
-        glCallList(self.pokebola.gl_list)
+        glCallList(self.luazinha.gl_list)
 
         glPopMatrix()
 
@@ -292,7 +317,7 @@ class Main:
         glTranslatef(15, 0, 0)
 
         # faz a pokebola ficar girando
-        glRotatef(self.cube_angle, 0, 1, 0)
+        glRotatef(self.eixo_angle, 0, 1, 0)
         glTranslatef(0, 0, -1)
 
         glCallList(self.pokebola.gl_list)

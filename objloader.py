@@ -30,6 +30,7 @@ def MTL(filename):
         elif values[0] == 'map_d':
             mtl[values[0]] = values[1:]
         else:
+            # print(values)
             mtl[values[0]] = map(float, values[1:])
     return contents
 

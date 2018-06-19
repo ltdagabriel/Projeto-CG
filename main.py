@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
+import math
+
 import pygame
 from OpenGL.GL import *
 from OpenGL.GLU import *
-import math
-from objloader import *
-import sys, pygame
-from pygame.locals import *
-from pygame.constants import *
-from OpenGL.GL import *
-from OpenGL.GLU import *
+
 import graphics
+from objloader import *
 
 
 class Cube(object):
@@ -52,16 +49,16 @@ class Cube(object):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
 
-    	luzAmbiente=[0.8,0.8,0.8,1.0]
-    	luzDifusa=[0.7,0.7,0.7,1.0]
-    	luzEspecular=[1.0,1.0,1.0,1.0]
-    	posicaoLuz=[0.0,10.0,0.0,1.0]
+        luzAmbiente = [0.8, 0.8, 0.8, 1.0]
+        luzDifusa = [0.7, 0.7, 0.7, 1.0]
+        luzEspecular = [1.0, 1.0, 1.0, 1.0]
+        posicaoLuz = [0.0, 10.0, 0.0, 1.0]
 
-    	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente)
-    	# glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente)
-    	# glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
-    	# glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular)
-    	# glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, luzAmbiente)
+        # glLightfv(GL_LIGHT0, GL_AMBIENT, luzAmbiente)
+        # glLightfv(GL_LIGHT0, GL_DIFFUSE, luzDifusa)
+        # glLightfv(GL_LIGHT0, GL_SPECULAR, luzEspecular)
+        # glLightfv(GL_LIGHT0, GL_POSITION, posicaoLuz)
 
         # Add positioned light:
         # glLightfv(GL_LIGHT1, GL_SPECULAR, (0.9, 0.9, 0.9, 0.8))
@@ -158,29 +155,29 @@ class Cube(object):
         self.up_key = False
         self.down_key = False
 
-
     def divideViewport(self):
-    	print("Entrou")
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    	#/** viewport do canto superior esquerdo **/
-    	glColor3f(0.0,0.0,1.0)
-    	glViewport(0, 0, 1000, 700)
-    	glColor3f(0.0,0.0,1.0)
+        print("Entrou")
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        # /** viewport do canto superior esquerdo **/
+        glColor3f(0.0, 0.0, 1.0)
+        glViewport(0, 0, 1000, 700)
+        glColor3f(0.0, 0.0, 1.0)
 
-    	glMatrixMode(GL_PROJECTION); #//define que a matrix é a de projeção
-    	glLoadIdentity(); #//carrega a matrix de identidade
-    	glOrtho(-3.0, 3.0, -3.0, 3.0, 1.0, 50.0); #//define uma projeção ortogonal
+        glMatrixMode(GL_PROJECTION);  # //define que a matrix é a de projeção
+        glLoadIdentity();  # //carrega a matrix de identidade
+        glOrtho(-3.0, 3.0, -3.0, 3.0, 1.0, 50.0);  # //define uma projeção ortogonal
 
-    	glMatrixMode(GL_MODELVIEW); #//matrix em uso: modelview
-    	glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);  # //matrix em uso: modelview
+        glLoadIdentity();
 
-    	#/** define a posicao da camera **/
-    	gluLookAt(0.0, 1.0, 0.0, #//posição da câmera
-        	      0.0, 0.0, 0.0, #//para onde a câmera aponta
-        	      0.0, 0.0, 1.0); #//vetor view-up*/
+        # /** define a posicao da camera **/
+        gluLookAt(0.0, 1.0, 0.0,  # //posição da câmera
+                  0.0, 0.0, 0.0,  # //para onde a câmera aponta
+                  0.0, 0.0, 1.0);  # //vetor view-up*/
 
-    	glColor3f(1.0, 0.0, 0.0); #//altera o atributo de cor
-    	# glutWireTeapot(1.0); #// desenha o tea pot
+        glColor3f(1.0, 0.0, 0.0);  # //altera o atributo de cor
+
+    # glutWireTeapot(1.0); #// desenha o tea pot
 
     def delete_texture(self):
         pass
@@ -197,8 +194,6 @@ def main():
     pygame.display.set_caption("Projeto OpenGL")
     clock = pygame.time.Clock()
     done = False
-
-
 
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
@@ -240,7 +235,7 @@ def main():
                     cube.move_back()
                     cube.down_key = True
                 elif event.key == pygame.K_0:
-            		cube.divideViewport()
+                    cube.divideViewport()
 
             if event.type == pygame.KEYUP:
 
@@ -252,7 +247,6 @@ def main():
                     cube.keyup()
                 elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
                     cube.keyup()
-            	
 
         cube.update()
         cube.render_scene()

@@ -17,16 +17,17 @@ try:
     from OpenGL.GL import *
     from OpenGL.GLU import *
     from OpenGL.GLUT import *
-    from objloader import *
-    import graphics
 except:
     print "OpenGL wrapper for python not found"
 
 try:
-    from objloader import *
-    import graphics
+    # Utilizado para importar objetos com MTL
+    from ObjectLoaders.objloader import *
+
+    # Utilizado para importar Objeto sem textura e adicionar textura externamente
+    from ObjectLoaders import graphics
 except:
-    print "Falha ao importar biblioteca local"
+    print "Não foi encontrado as bibliotecas da pasta ObjectLoaders"
 
 # Last time when sphere was re-displayed
 last_time = 0
@@ -68,7 +69,6 @@ class Viewport:
                   self.up["x"], self.up["y"], self.up["z"])
 
 
-# The sphere class
 class Projeto:
     eixo_angle = 0
     sol_ang = 0
@@ -136,8 +136,6 @@ class Projeto:
         # Set position and intensity of light
         glLightfv(GL_LIGHT0, GL_POSITION, self.direction)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, self.intensity)
-
-
 
         # Setup the material
         glEnable(GL_COLOR_MATERIAL)

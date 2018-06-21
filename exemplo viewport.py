@@ -53,10 +53,10 @@ class Main:
     down_key = False
     angleY = 0
     angleX = 0
-    eixo_angle = 0
     eixoY = 10
     eixoX = 0
 
+    eixo_angle = 0
     sol_ang = 0
     width = 1280
     height = 650
@@ -74,14 +74,14 @@ class Main:
         pygame.display.set_mode(self.viewport, DOUBLEBUF | OPENGL)
         pygame.display.set_caption("PROJETO CGR")
 
-        glLightfv(GL_LIGHT0, GL_POSITION, (-40, 200, 100, 0.0))
-        glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
-        glEnable(GL_LIGHT0)
-        glEnable(GL_LIGHTING)
-        glEnable(GL_COLOR_MATERIAL)
-        glEnable(GL_DEPTH_TEST)
-        glShadeModel(GL_SMOOTH)  # most obj files expect to be smooth-shaded
+        # glLightfv(GL_LIGHT0, GL_POSITION, (-40, 200, 100, 0.0))
+        # glLightfv(GL_LIGHT0, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0))
+        # glLightfv(GL_LIGHT0, GL_DIFFUSE, (0.5, 0.5, 0.5, 1.0))
+        # glEnable(GL_LIGHT0)
+        # glEnable(GL_LIGHTING)
+        # glEnable(GL_COLOR_MATERIAL)
+        # glEnable(GL_DEPTH_TEST)
+        # glShadeModel(GL_SMOOTH)  # most obj files expect to be smooth-shaded
 
         # ---Coordinates----[x,y,z]-----------------------------
         self.coordinates = [0, 0, 0]
@@ -191,8 +191,10 @@ class Main:
         glLoadIdentity()
         width, height = self.viewport
         gluPerspective(90.0, width / float(height), 1, 100.0)
-        glEnable(GL_DEPTH_TEST)
-        glMatrixMode(GL_MODELVIEW)
+
+        # glEnable(GL_DEPTH_TEST)
+        # glMatrixMode(GL_MODELVIEW)
+
         # VIEWPORT GRANDE DA ESQUERDA
         self.front.init(0, 0, 800, 650)
         self.front.lookAt({"x": 0, "y": 0, "z": 30},

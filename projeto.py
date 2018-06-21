@@ -1,0 +1,384 @@
+# -*- coding: utf-8 -*-
+# autores:
+#   - Gabriel Choptian
+#   - Caio Cesar Hideo Nakai
+#   - Rafael Menezes Barboza
+
+# Projeto OPENGL
+# Controle: UP/DOWN - scale up/down
+#           LEFT/RIGHT - rotate left/right
+#           F1 - Toggle surface as SMOOTH or FLAT
+
+# Python imports
+from math import *
+
+# OpenGL imports for python
+try:
+    from OpenGL.GL import *
+    from OpenGL.GLU import *
+    from OpenGL.GLUT import *
+    from objloader import *
+    import graphics
+except:
+    print "OpenGL wrapper for python not found"
+
+try:
+    from objloader import *
+    import graphics
+except:
+    print "Falha ao importar biblioteca local"
+
+# Last time when sphere was re-displayed
+last_time = 0
+
+
+class Viewport:
+    def __init__(self):
+        self.height = 0
+        self.width = 0
+        self.eye = {"x": 0, "y": 0, "z": 0}
+        self.look = {"x": 0, "y": 0, "z": 0}
+        self.up = {"x": 0, "y": 0, "z": 0}
+        self.aspect = None
+        self.startx = None
+        self.starty = None
+
+    def init(self, ox, oy, w, h):
+        self.startx = ox
+        self.starty = oy
+        self.width = w
+        self.height = h
+        self.aspect = self.width / self.height
+
+    def lookAt(self, e, l, u):
+        self.eye = e
+        self.look = l
+        self.up = u
+        self.set()
+
+    def set(self):
+        glViewport(self.startx, self.starty, self.width, self.height)
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(45.0, self.aspect, 0.01, 1000.0)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        gluLookAt(self.eye["x"], self.eye["y"], self.eye["z"],
+                  self.look["x"], self.look["y"], self.look["z"],
+                  self.up["x"], self.up["y"], self.up["z"])
+
+
+# The sphere class
+class Projeto:
+    eixo_angle = 0
+    sol_ang = 0
+
+    # Constructor for the sphere class
+    def __init__(self):
+
+        self.user_theta = 0
+        self.user_height = 0
+
+        # Direction of light
+        self.direction = [0.0, 2.0, -1.0, 1.0]
+
+        # Intensity of light
+        self.intensity = [0.7, 0.7, 0.7, 1.0]
+
+        # Intensity of ambient light
+        self.ambient_intensity = [0.3, 0.3, 0.3, 1.0]
+
+        # The surface type(Flat or Smooth)
+        self.surface = GL_FLAT
+
+        # Declaração de viewport
+        self.front = Viewport()
+        self.top = Viewport()
+        self.side = Viewport()
+
+        # Carrega Objetos
+        self.pokebola = OBJ("pokebola.obj", swapyz=True)
+
+        self.pikachu = OBJ("pikachu.obj", swapyz=True)
+
+        self.arvorinha = OBJ("Lowpoly_tree_sample.obj", swapyz=True)
+
+        self.luazinha = OBJ("Moon.obj", swapyz=True)
+
+        self.solzinho = OBJ("Sun.obj", swapyz=True)
+
+        # renderiza objeto sem textura
+        self.ground = graphics.ObjLoader("plane.obj")
+
+        # importa uma imagem para agir como textura do objeto
+        self.ground_texture = graphics.load_texture("plane.png")
+
+    # Initialize
+    def init(self):
+
+        # Set background color to black
+        glClearColor(0.0, 0.0, 0.0, 0.0)
+
+        self.compute_location()
+
+        # Set OpenGL parameters
+        glEnable(GL_DEPTH_TEST)
+
+        # Enable lighting
+        glEnable(GL_LIGHTING)
+
+        # Set light model
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, self.ambient_intensity)
+
+        # Enable light number 0
+        glEnable(GL_LIGHT0)
+
+        # Set position and intensity of light
+        glLightfv(GL_LIGHT0, GL_POSITION, self.direction)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, self.intensity)
+
+
+
+        # Setup the material
+        glEnable(GL_COLOR_MATERIAL)
+        glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
+
+    # Compute location
+    def compute_location(self):
+        x = 2 * cos(self.user_theta)
+        y = 2 * sin(self.user_theta)
+        z = self.user_height
+        d = sqrt(x * x + y * y + z * z)
+
+        # Set matrix mode
+        glMatrixMode(GL_PROJECTION)
+
+        # Reset matrix
+        glLoadIdentity()
+
+        # VIEWPORT GRANDE DA ESQUERDA
+        self.front.init(0, 0, 800, 650)
+        self.front.lookAt({"x": 0, "y": 0, "z": 30},
+                          {"x": 0, "y": 0, "z": 0},
+                          {"x": 0, "y": 1, "z": 0})
+
+        # VIEWPORT DO CANTO INFERIOR DIREITO
+        self.top.init(800, 0, 480, 325)
+        self.top.lookAt({"x": 0, "y": 30, "z": 0},
+                        {"x": 0, "y": 0, "z": 0},
+                        {"x": 0, "y": 0, "z": -1})
+
+        # VIEWPORT DO CANTO SUPERIOR DIREITO
+        self.side.init(800, 325, 480, 325)
+        self.side.lookAt({"x": 30, "y": 0, "z": 0},
+                         {"x": 0, "y": 0, "z": 0},
+                         {"x": 0, "y": 1, "z": 0})
+
+    def display(self):
+
+        # atualiza o angulos
+        self.eixo_angle = 0 if self.eixo_angle >= 360 else self.eixo_angle + 1
+        self.sol_ang += .5
+
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+        # Set color to white
+        glColor3f(1.0, 1.0, 1.0)
+
+        # Set shade model
+        glShadeModel(self.surface)
+
+        self.front.set()
+        self.objects()
+
+        self.top.set()
+        self.objects()
+
+        self.side.set()
+        self.objects()
+
+        glutSwapBuffers()
+
+    def plano(self):
+        # Linha Z
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, 0, 1000)
+        glEnd()
+        glColor3f(0, 0, 1)
+
+        glPopMatrix()
+
+        # Linha Y
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(0, 1000, 0)
+        glEnd()
+        glColor3f(0, 1, 0)
+
+        glPopMatrix()
+
+        # Linha X
+        glPushMatrix()
+
+        glBegin(GL_LINE_LOOP)
+        glVertex3f(0, 0, 0)
+        glVertex3f(1000, 0, 0)
+        glEnd()
+        glColor3f(1, 0, 0)
+
+        glPopMatrix()
+
+    def objects(self):
+        glPushMatrix()
+
+        # faz a pokebola ficar girando
+        glTranslatef(8, 0, 0)
+        glRotatef(self.eixo_angle, 0, 1, 0)
+        glRotatef(45, 1, 0, 0)
+        glTranslatef(0, 0, -1)
+        glCallList(self.pokebola.gl_list)
+
+        glPopMatrix()
+
+        glPushMatrix()
+        glRotatef(90, -1, 0, 0)
+        glRotatef(180, 0, 0, 1)
+        glTranslatef(0, 0, -1)
+        glColor3f(1, 1, 0)
+        glCallList(self.pikachu.gl_list)
+        glPopMatrix()
+
+        glPushMatrix()
+        glTranslatef(2, -1, -10)
+        glRotatef(90, -1, 0, 0)
+        glScalef(0.5, 0.5, 0.5)
+        glCallList(self.arvorinha.gl_list)
+        glPopMatrix()
+
+        glPushMatrix()
+        # renderiza o chao
+        glColor3f(0, 23, 1)
+        glRotatef(1, 1, 0, 0)
+        glTranslatef(0, -1.5, 0)
+        glScalef(10, 10, 10)
+        self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
+        glPopMatrix()
+
+        self.sol()
+        self.plano()
+        self.lua()
+
+    def lua(self):
+        glPushMatrix()
+
+        glRotatef(self.sol_ang, 0, 0, -1)
+
+        glTranslatef(-15, 0, 0)
+        glRotatef(self.eixo_angle, 0, 1, 0)
+        glTranslatef(0, 0, -5)
+        glColor3f(196, 196, 196)
+        glScalef(0.1, 0.1, 0.1)
+        # faz a pokebola ficar girando
+
+        glCallList(self.luazinha.gl_list)
+
+        glPopMatrix()
+
+    def sol(self):
+        glPushMatrix()
+
+        glRotatef(self.sol_ang, 0, 0, -1)
+
+        glTranslatef(15, 0, 0)
+        glRotatef(self.eixo_angle, 0, 1, 0)
+        glTranslatef(0, 0, -5)
+        glColor3f(253, 184, 19)
+        glScalef(0.1, 0.1, 0.1)
+        # faz a pokebola ficar girando
+
+        glCallList(self.solzinho.gl_list)
+
+        glPopMatrix()
+
+    # Keyboard controller for sphere
+    def special(self, key, x, y):
+        # Scale the sphere up or down
+        if key == GLUT_KEY_UP:
+            self.user_height += 0.1
+        if key == GLUT_KEY_DOWN:
+            self.user_height -= 0.1
+
+        # Rotate the cube
+        if key == GLUT_KEY_LEFT:
+            self.user_theta += 0.1
+        if key == GLUT_KEY_RIGHT:
+            self.user_theta -= 0.1
+
+        # Toggle the surface
+        if key == GLUT_KEY_F1:
+            if self.surface == GL_FLAT:
+                self.surface = GL_SMOOTH
+            else:
+                self.surface = GL_FLAT
+
+        self.compute_location()
+        glutPostRedisplay()
+
+    # The idle callback
+    def idle(self):
+        global last_time
+        time = glutGet(GLUT_ELAPSED_TIME)
+
+        if last_time == 0 or time >= last_time + 40:
+            last_time = time
+            glutPostRedisplay()
+
+    # The visibility callback
+    def visible(self, vis):
+        if vis == GLUT_VISIBLE:
+            glutIdleFunc(self.idle)
+        else:
+            glutIdleFunc(None)
+
+
+# The main function
+def main():
+    # Initialize the OpenGL pipeline
+    glutInit(sys.argv)
+
+    # Set OpenGL display mode
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH)
+
+    # Set the Window size and position
+    glutInitWindowSize(1280, 650)
+    glutInitWindowPosition(50, 50)
+
+    # Create the window with given title
+    glutCreateWindow('PROJETO CGR')
+
+    # Instantiate the sphere object
+    s = Projeto()
+
+    s.init()
+
+    # Set the callback function for display
+    glutDisplayFunc(s.display)
+
+    # Set the callback function for the visibility
+    glutVisibilityFunc(s.visible)
+
+    # Set the callback for special function
+    glutSpecialFunc(s.special)
+
+    # Run the OpenGL main loop
+    glutMainLoop()
+
+
+# Call the main function
+if __name__ == '__main__':
+    main()

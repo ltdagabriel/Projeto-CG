@@ -6,3 +6,4 @@
 *.xml
 *.xml
 objloader.pyc
+*.pyc

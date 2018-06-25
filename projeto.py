@@ -64,6 +64,7 @@ class Viewport:
         gluPerspective(45.0, self.aspect, 0.01, 1000.0)
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
+
         gluLookAt(self.eye["x"], self.eye["y"], self.eye["z"],
                   self.look["x"], self.look["y"], self.look["z"],
                   self.up["x"], self.up["y"], self.up["z"])
@@ -72,6 +73,7 @@ class Viewport:
 class Projeto:
     eixo_angle = 0
     sol_ang = 0
+    sol_raio = 30
 
     # Constructor for the sphere class
     def __init__(self):
@@ -80,13 +82,15 @@ class Projeto:
         self.user_height = 0
 
         # Direction of light
-        self.direction = [0.0, 2.0, -1.0, 1.0]
+        self.sol_position = [0.0, 0, -1, 0]
+        self.lua_position = [0.0, 0, -1, 0]
 
         # Intensity of light
-        self.intensity = [0.7, 0.7, 0.7, 1.0]
+        self.sol_intensity = [0.7, 0.5, 0.5, 1.0]
+        self.lua_intensity = [0.3, 0.3, 0.7, 1.0]
 
         # Intensity of ambient light
-        self.ambient_intensity = [0.3, 0.3, 0.3, 1.0]
+        self.ambient_intensity = [0.2, 0.2, 0.2, 1.0]
 
         # The surface type(Flat or Smooth)
         self.surface = GL_FLAT
@@ -96,8 +100,15 @@ class Projeto:
         self.top = Viewport()
         self.side = Viewport()
 
+        # Camera
+        self.cameraPos = {'x': 0, 'y': 0, 'z': 30}
+        self.cameraFront = {'x': 0, 'y': 0, 'z': -1}
+        self.cameraUp = {'x': 0, 'y': 1, 'z': 0}
+
         # Carrega Objetos
         self.pokebola = OBJ("pokebola.obj", swapyz=True)
+
+        self.matinho = OBJ("matinho.obj", swapyz=True)
 
         self.pikachu = OBJ("pikachu.obj", swapyz=True)
 
@@ -113,6 +124,26 @@ class Projeto:
         # importa uma imagem para agir como textura do objeto
         self.ground_texture = graphics.load_texture("plane.png")
 
+    def lighting(self):
+
+        # Set position and intensity of light
+
+        # SOL
+        glLightfv(GL_LIGHT0, GL_POSITION, self.sol_position)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, self.sol_intensity)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, self.sol_intensity)
+
+        # LUA
+        glLightfv(GL_LIGHT1, GL_POSITION, self.lua_position)
+        glLightfv(GL_LIGHT1, GL_DIFFUSE, self.lua_intensity)
+        glLightfv(GL_LIGHT0, GL_SPECULAR, self.lua_intensity)
+
+        glLightfv(GL_LIGHT0, GL_AMBIENT, (0, 0, 0, 1))
+
+        glEnable(GL_LIGHTING)
+        glEnable(GL_LIGHT0)
+        glEnable(GL_LIGHT1)
+
     # Initialize
     def init(self):
 
@@ -123,19 +154,6 @@ class Projeto:
 
         # Set OpenGL parameters
         glEnable(GL_DEPTH_TEST)
-
-        # Enable lighting
-        glEnable(GL_LIGHTING)
-
-        # Set light model
-        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, self.ambient_intensity)
-
-        # Enable light number 0
-        glEnable(GL_LIGHT0)
-
-        # Set position and intensity of light
-        glLightfv(GL_LIGHT0, GL_POSITION, self.direction)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, self.intensity)
 
         # Setup the material
         glEnable(GL_COLOR_MATERIAL)
@@ -156,9 +174,11 @@ class Projeto:
 
         # VIEWPORT GRANDE DA ESQUERDA
         self.front.init(0, 0, 800, 650)
-        self.front.lookAt({"x": 0, "y": 0, "z": 30},
-                          {"x": 0, "y": 0, "z": 0},
-                          {"x": 0, "y": 1, "z": 0})
+        self.front.lookAt(self.cameraPos,
+                          {"x": self.cameraPos['x'] + self.cameraFront['x'],
+                           "y": self.cameraPos['y'] + self.cameraFront['y'],
+                           "z": self.cameraPos['z'] + self.cameraFront['z']},
+                          self.cameraUp)
 
         # VIEWPORT DO CANTO INFERIOR DIREITO
         self.top.init(800, 0, 480, 325)
@@ -174,9 +194,11 @@ class Projeto:
 
     def display(self):
 
+        self.lighting()
+
         # atualiza o angulos
         self.eixo_angle = 0 if self.eixo_angle >= 360 else self.eixo_angle + 1
-        self.sol_ang += .5
+        self.sol_ang += .005
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
@@ -235,9 +257,12 @@ class Projeto:
         glPushMatrix()
 
         # faz a pokebola ficar girando
-        glTranslatef(8, 0, 0)
+        glTranslatef(0, 8, 0)
+
         glRotatef(self.eixo_angle, 0, 1, 0)
+
         glRotatef(45, 1, 0, 0)
+        glScalef(1.5, 1.5, 1.5)
         glTranslatef(0, 0, -1)
         glCallList(self.pokebola.gl_list)
 
@@ -262,8 +287,9 @@ class Projeto:
         # renderiza o chao
         glColor3f(0, 23, 1)
         glRotatef(1, 1, 0, 0)
-        glTranslatef(0, -1.5, 0)
+        glTranslatef(0, -2, 0)
         glScalef(10, 10, 10)
+        # glCallList(self.matinho.gl_list)
         self.ground.render_texture(self.ground_texture, ((0, 0), (2, 0), (2, 2), (0, 2)))
         glPopMatrix()
 
@@ -272,27 +298,29 @@ class Projeto:
         self.lua()
 
     def lua(self):
+
+        self.lua_position = [-self.sol_raio * cos(self.sol_ang), -self.sol_raio * sin(self.sol_ang), 0, 1]
         glPushMatrix()
 
         glRotatef(self.sol_ang, 0, 0, -1)
 
-        glTranslatef(-15, 0, 0)
-        glRotatef(self.eixo_angle, 0, 1, 0)
+        glTranslatef(-1 * self.sol_raio * cos(self.sol_ang), -1 * self.sol_raio * sin(self.sol_ang), 0)
         glTranslatef(0, 0, -5)
         glColor3f(196, 196, 196)
-        glScalef(0.1, 0.1, 0.1)
         # faz a pokebola ficar girando
+        glScalef(0.1, 0.1, 0.1)
 
         glCallList(self.luazinha.gl_list)
 
         glPopMatrix()
 
     def sol(self):
+        self.sol_position = [self.sol_raio * cos(self.sol_ang), self.sol_raio * sin(self.sol_ang), 0, 1]
+
         glPushMatrix()
 
-        glRotatef(self.sol_ang, 0, 0, -1)
+        glTranslatef(self.sol_raio * cos(self.sol_ang), self.sol_raio * sin(self.sol_ang), 0)
 
-        glTranslatef(15, 0, 0)
         glRotatef(self.eixo_angle, 0, 1, 0)
         glTranslatef(0, 0, -5)
         glColor3f(253, 184, 19)
@@ -307,22 +335,20 @@ class Projeto:
     def special(self, key, x, y):
         # Scale the sphere up or down
         if key == GLUT_KEY_UP:
-            self.user_height += 0.1
-        if key == GLUT_KEY_DOWN:
-            self.user_height -= 0.1
+            self.cameraPos['z'] -= 0.1
 
-        # Rotate the cube
+        if key == GLUT_KEY_DOWN:
+            self.cameraPos['z'] += 0.1
+
+            # Rotate the cube
         if key == GLUT_KEY_LEFT:
-            self.user_theta += 0.1
+            self.cameraPos['x'] -= 0.1
         if key == GLUT_KEY_RIGHT:
-            self.user_theta -= 0.1
+            self.cameraPos['x'] += 0.1
 
         # Toggle the surface
         if key == GLUT_KEY_F1:
-            if self.surface == GL_FLAT:
-                self.surface = GL_SMOOTH
-            else:
-                self.surface = GL_FLAT
+            self.surface = GL_FLAT if GL_SMOOTH else GL_SMOOTH
 
         self.compute_location()
         glutPostRedisplay()
